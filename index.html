@@ -15,6 +15,7 @@
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
     <script type="text/javascript">
         
+        var marker;
 
         var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
         var options = { //지도를 생성할 때 필요한 기본 옵션
@@ -37,7 +38,7 @@
                 map.setCenter(locPosition); 
 
                 // 사용자의 위치가 업데이트 될때마다 기존 마커 제거
-                if(marker != null){
+                if (marker != null) {
                     marker.setMap(null);
                 }
 
@@ -48,7 +49,7 @@
                 var markerImage = new kakao.maps.MarkerImage('./right.png', imageSize, imageOption),
                     markerPosition  = new kakao.maps.LatLng(lat, lon); 
 
-                var marker = new kakao.maps.Marker({
+                marker = new kakao.maps.Marker({
                     position: markerPosition,
                     image : markerImage
                 });
@@ -63,9 +64,7 @@
                 enableHighAccuracy: true,
                 maximumAge : 30000,
                 timeout : 27000
-            }
-            
-            );
+            });
 
         } else {
             console.log("Geolocation API가 지원하지 않습니다.");
@@ -121,4 +120,3 @@
     </script>
 </body>
 </html>
-
