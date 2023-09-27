@@ -7,6 +7,10 @@
 <body style="margin:0; padding:0; height:100%;">
     <div id="map" style="width:100%;height:90%;"></div>
 
+    <!-- 방향 표시 엘리먼트 -->
+    <div id="direction"></div>
+
+
     <!-- 길찾기 링크 -->
     <input type="text" id="address" placeholder="주소를 입력하세요">
     <button onclick="searchAddress()">검색</button>
@@ -42,8 +46,8 @@
                     marker.setMap(null);
                 }
 
-                var imageSize = new kakao.maps.Size(30, 30), 
-                    imageOption = {offset: new kakao.maps.Point(30, 30)}; 
+                var imageSize = new kakao.maps.Size(35, 35), 
+                    imageOption = {offset: new kakao.maps.Point(35, 35)}; 
 
                 // 마커 이미지 경로
                 var markerImage = new kakao.maps.MarkerImage('./right.png', imageSize, imageOption),
@@ -69,6 +73,67 @@
         } else {
             console.log("Geolocation API가 지원하지 않습니다.");
         }
+
+        // 현재 위치와 검색한 위치 간의 방향을 표시하는 함수
+        function showDirection(current, destination) {
+            // 현재 위치와 검색한 위치 간의 방향 벡터를 계산
+            var vectorX = destination.getLng() - current.getLng();
+            var vectorY = destination.getLat() - current.getLat();
+
+            // 방향 각도를 계산
+            var angle = Math.atan2(vectorY, vectorX);
+            var angleDegrees = (angle * 180) / Math.PI;
+
+            // 각도를 동, 서, 남, 북으로 변환
+            var direction = "";
+            if (angleDegrees >= -45 && angleDegrees < 45) {
+                direction = "동";
+            } else if (angleDegrees >= 45 && angleDegrees < 135) {
+                direction = "남";
+            } else if (angleDegrees >= -135 && angleDegrees < -45) {
+                direction = "북";
+            } else {
+                direction = "서";
+            }
+
+            // 결과를 HTML 엘리먼트에 표시
+            var directionElement = document.getElementById('direction');
+            directionElement.innerHTML = "방향: " + direction;
+        }
+
+        // 검색한 주소로 이동하고 방향 표시 함수 호출
+        function searchAddress() {
+            var address = document.getElementById('address').value;
+            geocoder.addressSearch(address, function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 결과값으로 받은 위치를 마커로 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+
+                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">도착</div>'
+                    });
+                    
+                    infowindow.open(map, marker);
+
+                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                    map.setCenter(coords);
+
+                    // 경로 그리기
+                    drawPath(currentPosition, coords);
+
+                    // 방향 표시
+                    showDirection(currentPosition, coords);
+                } 
+            });
+        }
+
+
 
         // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new kakao.maps.services.Geocoder();
