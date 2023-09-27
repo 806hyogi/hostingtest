@@ -54,21 +54,32 @@
                     image : markerImage
                 });
 
-                // 마커를 지도에 추가
-                marker.setMap(map);
-            }, function(error){
-                console.log("Error occurred in watchPosition.");
-                console.log(error);
-            }, {
-                // 위치 정보 요청의 정확도 높이고 민감하게 반응
-                enableHighAccuracy: true,
-                maximumAge : 30000,
-                timeout : 27000
-            });
+            if (lastPosition != null) {
+                var angle = calculateAngle(lastPosition,currentPosition);
+                rotateMarker(marker ,angle);
+                
+                lastPosition = currentPosition;
+                
+            } else {
+                lastPosition = currentPosition;
+            }
+
+            // 마커를 지도에 추가
+            marker.setMap(map);
+
+        }, function(error){
+            console.log("Error occurred in watchPosition.");
+            console.log(error);
+        }, {
+            enableHighAccuracy: true,
+            maximumAge : 30000,
+            timeout : 27000
+        });
 
         } else {
-            console.log("Geolocation API가 지원하지 않습니다.");
+        console.log("Geolocation API가 지원하지 않습니다.");
         }
+
 
         var lastPosition = null;
         // 두 지점 사이의 각도를 계산하는 함수
@@ -82,15 +93,7 @@
         }
 
         // 마커 이미지 회전
-        function rotateMarker(marker, angle){
-            marker.setImage(new kakao.maps.MarkerImage(
-                './north1.png',
-                new kakao.maps.Size(35, 35),
-                {offset: new kakao.maps.Point(35, 35),
-                rotation: angle}
-            ));
-        }
-        
+
 
         // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new kakao.maps.services.Geocoder();
