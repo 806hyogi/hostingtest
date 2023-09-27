@@ -42,8 +42,8 @@
                     marker.setMap(null);
                 }
 
-                var imageSize = new kakao.maps.Size(35, 35), 
-                    imageOption = {offset: new kakao.maps.Point(35, 35)}; 
+                var imageSize = new kakao.maps.Size(40, 40), 
+                    imageOption = {offset: new kakao.maps.Point(40, 40)}; 
 
                 // 마커 이미지 경로
                 var markerImage = new kakao.maps.MarkerImage('./north1.png', imageSize, imageOption),
@@ -54,32 +54,32 @@
                     image : markerImage
                 });
 
-            if (lastPosition != null) {
-                var angle = calculateAngle(lastPosition,currentPosition);
-                rotateMarker(marker ,angle);
-                
-                lastPosition = currentPosition;
-                
-            } else {
-                lastPosition = currentPosition;
-            }
+                if (lastPosition != null) {
+                    var angle = calculateAngle(lastPosition,currentPosition);
+                    rotateMarker(marker ,angle);
+                    
+                    lastPosition = currentPosition;
+                    
+                } else {
+                    lastPosition = currentPosition;
+                }
 
-            // 마커를 지도에 추가
-            marker.setMap(map);
+                // 마커를 지도에 추가
+                marker.setMap(map);
 
-        }, function(error){
-            console.log("Error occurred in watchPosition.");
-            console.log(error);
-        }, {
-            enableHighAccuracy: true,
-            maximumAge : 30000,
-            timeout : 27000
-        });
+            }, function(error){
+                console.log("Error occurred in watchPosition.");
+                console.log(error);
+            }, {
+                // 위치 정보 요청의 정확도 높이고 민감하게 반응
+                enableHighAccuracy: true,
+                maximumAge : 30000,
+                timeout : 27000
+            });
 
         } else {
-        console.log("Geolocation API가 지원하지 않습니다.");
+            console.log("Geolocation API가 지원하지 않습니다.");
         }
-
 
         var lastPosition = null;
         // 두 지점 사이의 각도를 계산하는 함수
