@@ -38,6 +38,12 @@
                 currentPosition = new kakao.maps.LatLng(lat, lon);
                 map.setCenter(currentPosition);
 
+                // 범위 안에 들어왔을때 사용자를 체크한다.
+                var specificPoint = new kakao.maps.Lating(37.66569, 126.81357); // 특정 지점 좌표
+                if(kakao.maps.geometry.distance(currentPosition, specificPoint) <= 100){ // 도달 지점 100미터로 설정
+                    alert("포인트 지점에 도달했습니다.")
+                }
+
                 if (marker != null) {
                     marker.setMap(null);
                 }
@@ -78,6 +84,7 @@
             return theta;
         }
 
+        // 각도에 따른 방향 이미지 변환
         function rotateMarker(marker, angle) {
             let markerImageSrc;
 
