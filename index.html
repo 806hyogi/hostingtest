@@ -38,11 +38,6 @@
                 currentPosition = new kakao.maps.LatLng(lat, lon);
                 map.setCenter(currentPosition);
 
-                // 범위 안에 들어왔을때 사용자를 체크한다.
-                var specificPoint = new kakao.maps.Lating(37.66569, 126.81357); // 특정 지점 좌표
-                if(kakao.maps.geometry.distance(currentPosition, specificPoint) <= 100){ // 도달 지점 100미터로 설정
-                    alert("포인트 지점에 도달했습니다.")
-                }
 
                 if (marker != null) {
                     marker.setMap(null);
@@ -56,6 +51,13 @@
 
                 } else {
                     lastPosition = currentPosition;
+                }
+
+
+                // 포인트 범위 안에 들어왔을때 사용자를 체크한다.
+                if(kakao.maps.geometry.distance(currentPosition, pointPosition) <= 100){
+                    alert("포인트 +1");
+                    window.close(); // 페이지 자동 종료
                 }
 
                 marker.setMap(map);
@@ -84,6 +86,42 @@
             return theta;
         }
 
+
+
+        // 포인트 지점 좌표 생성
+        var pointPosition = new kakao.maps.LatLng(37.66602, 126.81316);
+
+        var imageSize = new kakao.maps.Size(30, 30);
+
+        var markerImage = new kakao.maps.MarkerImage('./star.png', imageSize);
+
+        // 포인트 지점 마커 생성
+        var pointMarker = new kakao.maps.Marker({
+            position: pointPosition,
+            map: map,
+            image: markerImage
+        });
+
+        // 포인터 지점 설명 표시
+        var infowindow = new kakao.maps.InfoWindow({
+            position : pointPosition,
+            content : '<div style="width:150px;text-align:center;padding:6px 0;">포인트</div>' 
+        })
+        infowindow.open(map, pointMarker);
+
+        // 일정 간격으로 포인트 마커가 깜박이는 코드
+        setInterval(function() {
+            if(pointMarker.getMap()){
+                pointMarker.setMap(null);
+                infowindow.close();
+            }else{
+                pointMarker.setMap(map);
+                infowindow.open(map, pointMarker);
+            }
+        }, 1500) //1.5초 간격
+
+
+
         // 각도에 따른 방향 이미지 변환
         function rotateMarker(marker, angle) {
             let markerImageSrc;
@@ -97,7 +135,7 @@
             else if (angle > -112 && angle < -67) { markerImageSrc = './east.png' }//남 
             else { markerImageSrc = './southeast.png' }//남동 
 
-            var imageSize = new kakao.maps.Size(50, 50);
+            var imageSize = new kakao.maps.Size(45, 45);
             var imageOption = { offset: new kakao.maps.Point(17, 34) };
 
             var changeMarkerImg = new kakao.maps.Marker({
