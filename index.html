@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>KaKaoMap Study</title>
+    <style>
+        
+    </style>
 </head>
 
 <body style="margin:0; padding:0; height:100%;">
@@ -12,7 +15,7 @@
     <!-- 길찾기 링크 -->
     <input type="text" id="address" placeholder="주소를 입력하세요">
     <button onclick="searchAddress()">검색</button>
-
+    <button onclick="drawMultiPath()">여러 좌표 경로</button>
     <!-- 카카오 맵 API-->
     <script type="text/javascript"
         src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
@@ -30,14 +33,121 @@
 
         var map = new kakao.maps.Map(container, options);
 
+        // 포인트 지점 좌표 생성
+        var pointPosition = new kakao.maps.LatLng(37.55443, 126.89574);
+
+
+        
+        var imageSize = new kakao.maps.Size(25, 25);
+
+        var markerImage = new kakao.maps.MarkerImage('./star.png', imageSize);
+
+        // 포인트 지점 마커 생성
+        var pointMarker = new kakao.maps.Marker({
+            position: pointPosition,
+            map: map,
+            image: markerImage
+        });
+
+        // 포인터 지점 설명 표시
+        var infowindow = new kakao.maps.InfoWindow({
+            position : pointPosition,
+            content : '<div style="width:150px;text-align:center;padding:6px 0;">포인트</div>' 
+        })
+        infowindow.open(map, pointMarker);
+
+        // 일정 간격으로 포인트 마커가 깜박이는 코드
+        setInterval(function() {
+            if(pointMarker.getMap()){
+                pointMarker.setMap(null);
+                infowindow.close();
+            }else{
+                pointMarker.setMap(map);
+                infowindow.open(map, pointMarker);
+            }
+        }, 1500); //1.5초 간격
+
+        // 각도에 따른 방향 이미지 변환
+        function rotateMarker(marker, angle) {
+            let markerImageSrc;
+
+            if (angle >= -22.5 && angle < 22.5) { markerImageSrc = './east.png'; } // 동
+            else if (angle >= 22.5 && angle < 67.5) { markerImageSrc = './northeast.png'; } // 북동
+            else if (angle >= 67.5 && angle < 112.5) { markerImageSrc = './north.png'; } // 북
+            else if (angle >= 112.5 && angle < 157.5) { markerImageSrc = './northwest.png'; } // 북서
+            else if ((angle >= 157.5 && angle <= 180) || (angle >= -180 && angle < -157)) { markerImageSrc = './west.png'; } // 서
+            else if (angle > -157 && angle < -112) { markerImageSrc = './southwest.png' }//남서 
+            else if (angle > -112 && angle < -67) { markerImageSrc = './east.png' }//남 
+            else { markerImageSrc = './southeast.png' }//남동 
+
+            var imageSize = new kakao.maps.Size(45, 45);
+            var imageOption = { offset: new kakao.maps.Point(17, 34) };
+
+            var changeMarkerImg = new kakao.maps.Marker({
+                position: currentPosition,
+                map: map,
+                image: new kakao.maps.MarkerImage(markerImageSrc, imageSize, imageOption)
+            });
+
+            return changeMarkerImg;
+        }
+
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+
+        function searchAddress() {
+
+            let address = document.getElementById('address').value;
+            // 주소로 좌표를 검색합니다
+            geocoder.addressSearch(address, function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 결과값으로 받은 위치를 마커로 표시합니다
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+
+                    // 인포윈도우로 장소에 대한 설명을 표시합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="width:150px;text-align:center;padding:6px 0;">도착</div>'
+                    });
+
+                    infowindow.open(map, marker);
+
+                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                    //map.setCenter(coords);
+
+                    // 경로 그려주는 함수
+                    drawPath(currentPosition, coords);
+                }
+            });
+        }
+
+        // 경로 그려주는 함수
+        function drawPath(startPoint, endPoint) {
+            let polylinePath = [startPoint, endPoint];
+
+            // 경로를 그립니다.
+            let polyline = new kakao.maps.Polyline({
+                path: polylinePath,
+                strokeWeight: 3,
+                strokeColor: "#db4040",
+                strokeOpacity: 1,
+                strokeStyle: 'solid'
+            });
+            polyline.setMap(map);
+        }
+
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(function (position) {
                 var lat = position.coords.latitude,
                     lon = position.coords.longitude;
 
                 currentPosition = new kakao.maps.LatLng(lat, lon);
-                map.setCenter(currentPosition);
-
+                //map.setCenter(currentPosition);
 
                 if (marker != null) {
                     marker.setMap(null);
@@ -46,25 +156,17 @@
                 if (lastPosition != null) {
                     let angle = calculateAngle(lastPosition, currentPosition);
                     marker = rotateMarker(marker, angle);
-
-                    lastPosition = currentPosition;
-
                 } else {
                     lastPosition = currentPosition;
                 }
 
-
                 // 포인트 범위 안에 들어왔을때 사용자를 체크한다.
-                if(kakao.maps.geometry.distance(currentPosition, pointPosition) <= 100){
-                    let userConfirmed = confirm("포인트 +1");
-                    if (userConfirmed) {
-                        // 사용자가 '확인' 버튼을 클릭한 경우
-                        window.close(); // 페이지 자동 종료
-                    } else {
-                        // 사용자가 '취소' 버튼을 클릭한 경우, 필요한 추가 동작들...
-                        window.close();
-                    }
+                if (kakao.maps.geometry.distance(currentPosition, pointPosition) <= 1000) {
+                    alert("포인트 +1");
+                    window.close(); // 페이지 자동 종료
                 }
+
+                
 
                 marker.setMap(map);
 
@@ -92,118 +194,32 @@
             return theta;
         }
 
-
-
-        // 포인트 지점 좌표 생성
-        var pointPosition = new kakao.maps.LatLng(37.66602, 126.81316);
-
-        var imageSize = new kakao.maps.Size(30, 30);
-
-        var markerImage = new kakao.maps.MarkerImage('./star.png', imageSize);
-
-        // 포인트 지점 마커 생성
-        var pointMarker = new kakao.maps.Marker({
-            position: pointPosition,
-            map: map,
-            image: markerImage
+        
+        // 폴리라인 생성
+        var polyline = new kakao.maps.Polyline({
+            strokeWeight: 3,
+            strokeColor: "#db4040",
+            strokeOpacity: 1,
+            strokeStyle: 'solid'
         });
 
-        // 포인터 지점 설명 표시
-        var infowindow = new kakao.maps.InfoWindow({
-            position : pointPosition,
-            content : '<div style="width:150px;text-align:center;padding:6px 0;">포인트</div>' 
-        })
-        infowindow.open(map, pointMarker);
+        function drawMultiPath() {
+        // 여러 임의 좌표 생성
+        var positions = [
+            new kakao.maps.LatLng(37.65803, 126.84206),
+            new kakao.maps.LatLng(37.65688, 126.84427),
+            new kakao.maps.LatLng(37.65638, 126.84393),
+            // 필요한 만큼 더 추가 가능
+        ];
 
-        // 일정 간격으로 포인트 마커가 깜박이는 코드
-        setInterval(function() {
-            if(pointMarker.getMap()){
-                pointMarker.setMap(null);
-                infowindow.close();
-            }else{
-                pointMarker.setMap(map);
-                infowindow.open(map, pointMarker);
-            }
-        }, 1500) //1.5초 간격
+        // 현재 위치에서 임의 좌표까지 경로 설정
+        polyline.setPath([currentPosition].concat(positions));
 
-
-
-        // 각도에 따른 방향 이미지 변환
-        function rotateMarker(marker, angle) {
-            let markerImageSrc;
-
-            if (angle >= -22.5 && angle < 22.5) { markerImageSrc = './east.png'; } // 동
-            else if (angle >= 22.5 && angle < 67.5) { markerImageSrc = './northeast.png'; } // 북동
-            else if (angle >= 67.5 && angle < 112.5) { markerImageSrc = './north.png'; } // 북
-            else if (angle >= 112.5 && angle < 157.5) { markerImageSrc = './northwest.png'; } // 북서
-            else if ((angle >= 157.5 && angle <= 180) || (angle >= -180 && angle < -157)) { markerImageSrc = './west.png'; } // 서
-            else if (angle > -157 && angle < -112) { markerImageSrc = './southwest.png' }//남서 
-            else if (angle > -112 && angle < -67) { markerImageSrc = './east.png' }//남 
-            else { markerImageSrc = './southeast.png' }//남동 
-
-            var imageSize = new kakao.maps.Size(45, 45);
-            var imageOption = { offset: new kakao.maps.Point(17, 34) };
-
-            var changeMarkerImg = new kakao.maps.Marker({
-                position: currentPosition,
-                map: map,
-                image: new kakao.maps.MarkerImage(markerImageSrc, imageSize, imageOption)
-            });
-
-            return changeMarkerImg;
-        }
-
-        // 주소-좌표 변환 객체를 생성합니다
-        var geocoder = new kakao.maps.services.Geocoder();
-
-        function searchAddress() {
-
-            let address = document.getElementById('address').value;
-            // 주소로 좌표를 검색합니다
-            geocoder.addressSearch(address, function (result, status) {
-                if (status === kakao.maps.services.Status.OK) {
-                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-
-                    // 결과값으로 받은 위치를 마커로 표시합니다
-                    var marker = new kakao.maps.Marker({
-                        map: map,
-                        position: coords
-                    });
-
-                    // 인포윈도우로 장소에 대한 설명을 표시합니다
-                    var infowindow = new kakao.maps.InfoWindow({
-                        content: '<div style="width:150px;text-align:center;padding:6px 0;">도착</div>'
-                    });
-
-                    infowindow.open(map, marker);
-
-                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                    map.setCenter(coords);
-
-                    // 경로 그려주는 함수
-                    drawPath(currentPosition, coords);
-                }
-            });
-        }
-
-        // 경로 그려주는 함수
-        function drawPath(startPoint, endPoint) {
-            let polylinePath = [startPoint, endPoint];
-
-            // 경로를 그립니다.
-            let polyline = new kakao.maps.Polyline({
-                path: polylinePath,
-                strokeWeight: 3,
-                strokeColor: "#db4040",
-                strokeOpacity: 1,
-                strokeStyle: 'solid'
-            });
-            polyline.setMap(map);
-        }
-
-
-
+        // 지도에 선을 표시합니다 
+        polyline.setMap(map);
+    }
     </script>
 </body>
 
 </html>
+
