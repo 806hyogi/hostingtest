@@ -1,6 +1,4 @@
 
-
-
 // 각도에 따른 방향 이미지 변환
 function rotateMarker(marker, angle) {
   let markerImageSrc;
