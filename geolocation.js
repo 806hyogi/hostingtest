@@ -24,28 +24,28 @@ function watchPositionSuccessCallback(position){
   var lat = position.coords.latitude,
     lon = position.coords.longitude;
 
-    currentPosition = new kakao.maps.LatLng(lat, lon);
+  var newPosition = new kakao.maps.LatLng(lat, lon);
 
-    map.setCenter(currentPosition);
+  // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+  map.setCenter(newPosition);
 
-    if (marker != null) {
-        marker.setMap(null);
-    }
+  if (lastPosition != null) {
+      let angle = calculateAngle(lastPosition, newPosition);
+      rotateMarker(angle); // modified this line
+   } else {
+       lastPosition=newPosition;
+   }
 
-    if (lastPosition != null) {
-        let angle = calculateAngle(lastPosition, currentPosition);
-        marker=rotateMarker(marker ,angle );
-     } else {
-         lastPostion=currentPostion;
-     }
+   currentPosition = newPosition; // update current position after using it for calculation
 
-     pointPositions.forEach(function(pointPostion){
-         if(kakao.map.geometry.distance(currentPostion ,pointPostion)<=1000){
-             alert("포인트 +1");
-             window.close();
-         }
-     });
+   pointPositions.forEach(function(pointPostion){
+       if(kakao.map.geometry.distance(currentPostion ,pointPostion)<=1000){
+           alert("포인트 +1");
+           window.close();
+       }
+   });
 }
+
 
 function watchPositionErrorCallback(error){
 console.log("Error occurred in watchposition.");
