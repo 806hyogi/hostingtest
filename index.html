@@ -28,22 +28,104 @@
 </head>
 
 <body style="margin:0; padding:0; height:100%;">
-  
   <div id="map" style="width:100%;height:90%;"></div>
 
-   <!--GPS버튼 -->
-   <button class='gps-btn' onclick='moveToCurrentLocation()'>
-   <span class='gps-icon'></span> 현재 위치
-   </button>
+  <!--GPS버튼 -->
+  <button class='gps-btn' onclick='moveToCurrentLocation()'>
+  <span class='gps-icon'></span> 현재 위치
+  </button>
+  
+  <!-- 카카오 맵 API 연동 -->
+  <script type="text/javascript"
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
+  <script type="text/javascript">
 
-   <!-- 카카오 맵 API 연동 -->
-   <script type="text/javascript"
-     src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
+    var marker;
+    var currentPosition;
+    var lastPosition = null;
 
-   <!-- 분할된 JS 파일들 참조 -->
-   <script type="text/javascript" src="./main.js"></script>
-   <script type="text/javascript" src="./marker.js"></script>
-   <script>
+    var container = document.getElementById('map');
+    var options = {
+      center: new kakao.maps.LatLng(33.450701, 126.570667),
+      level: 3
+    };
+
+    var map = new kakao.maps.Map(container, options);
+
+    function moveToCurrentLocation(){
+      if (navigator.geolocation) {
+      
+      // Geolocation API를 사용하여 접속 위치를 얻어옵니다.
+      navigator.geolocation.getCurrentPosition(function(position) {
+      
+      var lat = position.coords.latitude,
+      lon = position.coords.longitude;
+      
+      var locPosition = new kakao.maps.LatLng(lat, lon);
+      
+      // 마커와 인포윈도우를 표시합니다.
+      displayMarker(locPosition);
+      });
+      } else { // Geolocation API가 지원되지 않으면
+      
+      alert("Geolocation is not supported by this browser.");
+      
+      }
+    }
+
+    function displayMarker(locPosition) {
+
+      // 기존의 marker가 있으면 지워줍니다.
+      if (marker != null) {
+          marker.setMap(null);
+      }
+  
+      // 마커 이미지의 이미지 크기 입니다
+      let imageSize = new kakao.maps.Size(20, 20); 
+  
+      let markerImageSrc ='./src/star1.png';
+      let markerImageOption ={offset :new kakao.maps.Point(17,34)};
+      let markerImage=new kakao.maps.MarkerImage(markerImageSrc,imageSize ,markerImageOption);
+  
+      // 전역 변수인 marker에 새로운 Marker 객체를 할당합니다.
+      marker = new kakao.maps.Marker({
+          position: locPosition,
+          image:markerImage
+        }); 
+  
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);  
+  
+        // 지도 중심 좌표를 접속위치로 변경합니다.
+        map.setCenter(locPosition);      
+  }
+  
+
+    // 여러 포인트 지점 좌표 생성
+    var pointPositions = [
+    new kakao.maps.LatLng(37.55443, 126.89574),
+    new kakao.maps.LatLng(37.54306, 126.91400),
+    new kakao.maps.LatLng(37.52988, 126.95228),
+    new kakao.maps.LatLng(37.51955, 126.99581),
+    new kakao.maps.LatLng(37.53037, 127.06723),
+    new kakao.maps.LatLng(37.54338, 127.10737),
+    ];
+
+    var imageSize = new kakao.maps.Size(20, 20);
+
+    var markerImage = new kakao.maps.MarkerImage('./src/star1.png', imageSize);
+
+    // 각 포인트 지점마다 마커 생성
+    pointPositions.forEach(function (pointPosition) {
+      var pointMarker = new kakao.maps.Marker({
+          position: pointPosition,
+          map: map,
+          image: markerImage
+      });
+    });
+
+
+
     // 각도에 따른 방향 이미지 변환
     function rotateMarker(marker, angle) {
       let markerImageSrc;
@@ -123,9 +205,33 @@
     }
 
 
+    // 폴리라인 생성
+    var polyline = new kakao.maps.Polyline({
+      strokeWeight: 3,
+      strokeColor: "#db4040",
+      strokeOpacity: 1,
+      strokeStyle: 'solid'
+    });
 
-   </script>
-   
+    function drawMultiPath() {
+      // 여러 임의 좌표 생성
+      var positions = [
+        new kakao.maps.LatLng(37.65803, 126.84206),
+        new kakao.maps.LatLng(37.65688, 126.84427),
+        new kakao.maps.LatLng(37.65638, 126.84393),
+        // 필요한 만큼 더 추가 가능
+      ];
+
+      // 현재 위치에서 임의 좌표까지 경로 설정
+      polyline.setPath([currentPosition].concat(positions));
+
+      // 지도에 선을 표시합니다 
+      polyline.setMap(map);
+    }
+
+    
+
+  </script>
 </body>
 
 </html>
