@@ -53,6 +53,19 @@ function displayMarker(locPosition) {
    newMarker.setMap(map);  
 }
 
+window.addEventListener('deviceorientation', function(event) {
+  var alpha;
+
+  if(event.webkitCompassHeading){
+      alpha=event.webkitCompassHeading; // iOS provides this in the 'webkitCompassHeading' property.
+  } else{
+      alpha=event.alpha;
+  }
+
+  var webkitAlpha = Math.round(alpha);
+  rotateMarker(webkitAlpha);
+}, false);
+
 // 각도에 따른 방향 이미지 변환 함수 추가
 function rotateMarker(angle) {
   var direction;
