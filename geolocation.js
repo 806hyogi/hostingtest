@@ -18,6 +18,13 @@ function moveToCurrentLocation(){
   }
 }
 
+// watch position with high accuracy
+if(navigator.geolocation){
+  navigator.geolocation.watchPosition(watchPositionSuccessCallback, watchPositionErrorCallback, { enableHighAccuracy: true });
+} else {
+  alert("Geolocation is not supported by this browser.");
+}
+
 function watchPositionSuccessCallback(position){
   var lat = position.coords.latitude,
     lon = position.coords.longitude;

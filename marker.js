@@ -28,7 +28,7 @@ function removeMarker() {
 // 전역 변수인 marker에 새로운 Marker 객체를 할당합니다.
 function setMarker(locPosition, imageSrc) {
     // 마커 이미지의 이미지 크기 입니다
-    let imageSize = new kakao.maps.Size(20, 20); 
+    let imageSize = new kakao.maps.Size(30, 30); 
 
     let markerImageSrc = imageSrc || './src/north.png';
     let markerImageOption ={offset :new kakao.maps.Point(17,34)};
