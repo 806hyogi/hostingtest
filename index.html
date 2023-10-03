@@ -43,7 +43,88 @@
    <!-- 분할된 JS 파일들 참조 -->
    <script type="text/javascript" src="./main.js"></script>
    <script type="text/javascript" src="./marker.js"></script>
-   <script type="text/javascript" src="./geolocation.js"></script>
+   <script>
+    // 각도에 따른 방향 이미지 변환
+    function rotateMarker(marker, angle) {
+      let markerImageSrc;
+
+      if (angle >= -22.5 && angle < 22.5) { markerImageSrc = './src/east.png'; } // 동
+      else if (angle >= 22.5 && angle < 67.5) { markerImageSrc = './src/northeast.png'; } // 북동
+      else if (angle >= 67.5 && angle < 112.5) { markerImageSrc = './src/north.png'; } // 북
+      else if (angle >= 112.5 && angle < 157.5) { markerImageSrc = './src/northwest.png'; } // 북서
+      else if ((angle >= 157.5 && angle <= 180) || (angle >= -180 && angle < -157)) { markerImageSrc = './src/west.png'; } // 서
+      else if (angle > -157 && angle < -112) { markerImageSrc = './src/southwest.png' }//남서 
+      else if (angle > -112 && angle < -67) { markerImageSrc = './src/east.png' }//남 
+      else { markerImageSrc = './src/southeast.png' }//남동 
+
+      var imageSize = new kakao.maps.Size(20, 20);
+      var imageOption = { offset: new kakao.maps.Point(17, 34) };
+
+      var changeMarkerImg = new kakao.maps.Marker({
+        position: currentPosition,
+        map: map,
+        image: new kakao.maps.MarkerImage(markerImageSrc, imageSize, imageOption)
+      });
+
+      return changeMarkerImg;
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(function (position) {
+        var lat = position.coords.latitude,
+          lon = position.coords.longitude;
+    
+        currentPosition = new kakao.maps.LatLng(lat, lon);
+    
+        // 지도의 중심을 현재 위치로 설정합니다.
+        map.setCenter(currentPosition);
+    
+        if (marker != null) {
+          marker.setMap(null);
+        }
+    
+        if (lastPosition != null) {
+          let angle = calculateAngle(lastPosition, currentPosition);
+          marker = rotateMarker(marker, angle);
+        } else {
+          lastPosition = currentPosition;
+        }
+    
+         // 모든 포인트 범위 안에 들어왔을때 사용자를 체크한다.
+         pointPositions.forEach(function(pointPosition) {
+           if (kakao.maps.geometry.distance(currentPosition, pointPosition) <= 1000) {
+             alert("포인트 +1");
+             window.close(); // 페이지 자동 종료
+           }
+         });
+    
+       }, function(error){
+         console.log("Error occurred in watchPosition.");
+         console.log(error);
+       }, { 
+         enableHighAccuracy: true,
+         maximumAge: 30000,
+         timeout: 27000
+       });
+    } else{
+      console.log("Geolocation API가 지원하지 않습니다.");
+    }
+    
+
+    // 두 지점 사이의 각도 계산
+    function calculateAngle(startPoint, endPoint) {
+      let dy = endPoint.getLat() - startPoint.getLat();
+      let dx = endPoint.getLng() - startPoint.getLng();
+      let theta = Math.atan2(dy, dx); // range (-PI, PI]
+
+      theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+
+      return theta;
+    }
+
+
+
+   </script>
    
 </body>
 
