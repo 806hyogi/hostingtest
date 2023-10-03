@@ -1,19 +1,26 @@
 // geolocation.js: 위치 정보와 관련된 기능을 처리합니다.
 
 function moveToCurrentLocation(){
-  if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-          var lat = position.coords.latitude,
-          lon = position.coords.longitude;
-          
-          var locPosition = new kakao.maps.LatLng(lat, lon);
-        
-          displayMarker(locPosition);
+  if(navigator.geolocation){
+    navigator.geolocation.watchPosition(function(position) {
+        var lat = position.coords.latitude,
+        lon = position.coords.longitude;
 
-          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-          map.setCenter(locPosition);
-      });
-  } else { 
+        currentPosition = new kakao.maps.LatLng(lat, lon);
+
+        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+        map.setCenter(currentPosition);
+
+        // 기존의 maker가 있으면 지워줍니다.
+        removeMarker();
+
+        // 새로운 Marker 객체를 생성하고 이를 전역 변수인 maker에 할당합니다.
+        marker = setMarker(currentPosition);
+
+         // 마커가 지도 위에 표시되도록 설정합니다
+         marker.setMap(map);  
+    }, watchPositionErrorCallback, { enableHighAccuracy: true });
+  } else {
       alert("Geolocation is not supported by this browser.");
   }
 }
