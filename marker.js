@@ -3,7 +3,7 @@ var marker = null;
 var currentPosition = null;
 
 // 마커 이미지의 이미지 크기 입니다
-var imageSize = new kakao.maps.Size(20, 20); 
+var imageSize = new kakao.maps.Size(40, 40); 
 var markerImageSrc = './src/star1.png';
 var markerImageOption = { offset: new kakao.maps.Point(17, 34) };
 var markerImage = new kakao.maps.MarkerImage(markerImageSrc, imageSize ,markerImageOption);
