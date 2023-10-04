@@ -117,7 +117,8 @@
     <!-- - 버튼 -->
     <button class='minus-btn' onclick='zoomOut()' aria-label='- 버튼'></button>
   </div>
-  <p id="speed">Speed:</p>
+  <p id="speed">Speed: <span id="speedValue"></span> km/h</p>
+
 
   <!-- 카카오 맵 API 연동 -->
   <script type="text/javascript"
@@ -147,8 +148,6 @@
       map.setLevel(level + 1);
     }
 
-
-    
     // 현재 위치로 이동하는 함수입니다.
     function moveToCurrentLocation() {
       if (navigator.geolocation) {
@@ -172,12 +171,44 @@
           map.setCenter(locPosition);
         });
 
-        
+
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
 
+    var lastTime = null;
+  var lastPos = null;
+
+  function startWatching() {
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(function(position) {
+        var currentTime = new Date().getTime();
+        var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        if (lastPos) {
+          // 거리 계산
+          var distance = kakao.maps.services.Util.computeDistance(lastPos, currentPos);
+          
+          // 시간 차이 계산 (시간 단위: 시간)
+          var timeDiff = (currentTime - lastTime) / (1000 * 60 * 60);
+
+          // 속도 계산 (km/h)
+          var speed = distance / timeDiff;
+
+          document.getElementById('speedValue').innerText = speed.toFixed(2);
+
+        }
+
+        lastTime = currentTime;
+        lastPos = currentPos;
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+
+  startWatching();
   </script>
 
 </body>
