@@ -26,7 +26,7 @@ if (navigator.geolocation) {
 
      // 10초 뒤에 지도의 중심을 현재 위치로 설정합니다.
      setTimeout(function() { 
-        map.setCenter(currentPosition); 
+        //map.setCenter(currentPosition); 
      }, 10000);
 
    }, function(error){
