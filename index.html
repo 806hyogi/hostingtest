@@ -156,40 +156,8 @@
         alert("Geolocation is not supported by this browser.");
       }
     }
-    
-// 위치 변경을 추적하고, 그에 따른 속도 계산
-if (navigator.geolocation) {
- navigator.geolocation.watchPosition(function(position) {
-     var lat = position.coords.latitude,
-         lon = position.coords.longitude;
-
-     var currentLocation = new kakao.maps.LatLng(lat, lon);
-     
-     if (lastPosition) {
-         // 시간 차이(초)
-         var timeDiff = (position.timestamp - lastTime) / 1000;
-
-         // 거리 차이(km)
-         var distanceDiff = lastPosition.distance(currentLocation) / 1000;
-
-         // speed(m/s)
-         var speed = distanceDiff / timeDiff;
-
-         document.getElementById('speed').innerText = 'Speed : ' + Math.round(speed *3.6 )+ ' km/h';
-     }
-
-     lastPosition = currentLocation ;
-     lastTime = position.timestamp;
- });
-} else {
- alert('Geolocation is not supported by this browser.');
-}
-
-
 
   </script>
-
-  
 
 </body>
 
