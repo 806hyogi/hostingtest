@@ -2,7 +2,8 @@
 
 if (navigator.geolocation) {
   var lastTime = null; // 시간 측정을 위한 변수
-
+  var lastPosition = null; // 위치 측정을 위한 변수
+  
   navigator.geolocation.watchPosition(function (position) {
     var lat = position.coords.latitude,
       lon = position.coords.longitude;
