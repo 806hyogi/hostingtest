@@ -104,7 +104,25 @@
           `<p>Country: ${data.country}</p>`;
       })
       .catch(error => console.error('Error:', error));
+  </script>
 
+  <div id="map" style="width: 100%; height: 100%;"></div>
+  <div id="athleteInfo"></div>
+  <!-- 버튼 컨테이너 -->
+  <div class="button-container">
+    <!-- GPS 버튼 -->
+    <button class='gps-btn' onclick='moveToCurrentLocation()' aria-label='현재 위치'></button>
+    <!-- + 버튼 -->
+    <button class='plus-btn' onclick='zoomIn()' aria-label='+ 버튼'></button>
+    <!-- - 버튼 -->
+    <button class='minus-btn' onclick='zoomOut()' aria-label='- 버튼'></button>
+  </div>
+  <p id="speed">Speed:</p>
+
+  <!-- 카카오 맵 API 연동 -->
+  <script type="text/javascript"
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
+  <script type="text/javascript">
     var marker;
     var currentPosition;
     var lastPosition = null;
@@ -129,6 +147,8 @@
       map.setLevel(level + 1);
     }
 
+
+    
     // 현재 위치로 이동하는 함수입니다.
     function moveToCurrentLocation() {
       if (navigator.geolocation) {
@@ -150,19 +170,9 @@
 
           // 지도 중심을 현재 위치로 이동시킵니다
           map.setCenter(locPosition);
-
-          // 속도 계산
-          if (lastPosition) {
-            var timeDiff = (position.timestamp - lastPosition.timestamp) / 1000;
-            var distanceDiff = kakao.maps.geometry.distance(lastPosition, locPosition) / 1000;
-            var speed = distanceDiff / timeDiff;
-            document.getElementById('speed').innerText = 'Speed: ' + Math.round(speed * 3.6) + ' km/h';
-          } else {
-            document.getElementById('speed').innerText = 'Speed: 0 km/h';
-          }
-
-          lastPosition = position;
         });
+
+        
       } else {
         alert("Geolocation is not supported by this browser.");
       }
