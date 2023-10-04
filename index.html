@@ -168,13 +168,8 @@
             lon = position.coords.longitude;
           currentPosition = new kakao.maps.LatLng(lat, lon);
 
-          //위치만 업데이트합니다
-          marker.setPosition(currentPosition);
-
-          // 10초 뒤에 지도 중심을 현재 위치로 이동시킵니다
-          setTimeout(function() { 
-            map.setCenter(currentPosition); 
-        }, 10000); // 10000ms = 10s
+          // 지도 중심을 현재 위치로 이동시킵니다
+          map.setCenter(currentPosition);
 
         }, function (error) {
               console.log("Error occurred. Error code: " + error.code);
@@ -184,6 +179,7 @@
         alert("Geolocation is not supported by this browser.");
       }
     }
+
 
 
     var lastTime = null;
