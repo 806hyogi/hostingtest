@@ -160,28 +160,28 @@
       map.setLevel(level + 1);
     }
 
-// 현재 위치로 이동하는 함수입니다.
-function moveToCurrentLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(function (position) {
-      var lat = position.coords.latitude,
-        lon = position.coords.longitude;
-      currentPosition = new kakao.maps.LatLng(lat, lon);
+    // 현재 위치로 이동하는 함수입니다.
+    function moveToCurrentLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function (position) {
+          var lat = position.coords.latitude,
+            lon = position.coords.longitude;
+          currentPosition = new kakao.maps.LatLng(lat, lon);
 
-      //위치만 업데이트합니다
-      marker.setPosition(currentPosition);
+          //위치만 업데이트합니다
+          marker.setPosition(currentPosition);
 
-      // 지도 중심을 현재 위치로 이동시킵니다
-      map.setCenter(currentPosition);
-      
-    }, function (error) {
+          // 지도 중심을 현재 위치로 이동시킵니다
+          map.setCenter(currentPosition);
+
+        }, function (error) {
           console.log("Error occurred. Error code: " + error.code);
-    },
-    { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 });
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
+        },
+          { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
 
     var lastTime = null;
     var lastPos = null;
@@ -193,8 +193,8 @@ function moveToCurrentLocation() {
           var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
           // 주행 거리 업데이트
-             updateDistance(lastPosition, currentPos);
-             lastPosition = currentPos;
+          updateDistance(lastPosition, currentPos);
+          lastPosition = currentPos;
           if (lastPos) {
             // 거리 계산
             var distance = kakao.maps.services.Util.computeDistance(lastPos, currentPos);
@@ -217,13 +217,13 @@ function moveToCurrentLocation() {
       }
     }
     function updateDistance(lastPosition, currentPosition) {
-  if (lastPosition && currentPosition) {
-    // 거리 계산 (km)
-    var distance = kakao.maps.services.Util.computeDistance(lastPosition, currentPosition) / 1000; // 미터를 킬로미터로 변환
-    totalDistance += distance; // 총 주행 거리 업데이트
-    document.getElementById('distanceValue').innerText = totalDistance.toFixed(2); // 소수점 두 자리까지 표시
-  }
-}
+      if (lastPosition && currentPosition) {
+        // 거리 계산 (km)
+        var distance = kakao.maps.services.Util.computeDistance(lastPosition, currentPosition) / 1000; // 미터를 킬로미터로 변환
+        totalDistance += distance; // 총 주행 거리 업데이트
+        document.getElementById('distanceValue').innerText = totalDistance.toFixed(2); // 소수점 두 자리까지 표시
+      }
+    }
 
     var timer; // 타이머 변수
     var startTime; // 주행 시작 시간

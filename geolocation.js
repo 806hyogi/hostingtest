@@ -1,14 +1,9 @@
-// Geolocation과 관련된 코드를 이 파일로 이동합니다.
-
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(function (position) {
     var lat = position.coords.latitude,
       lon = position.coords.longitude;
 
     currentPosition = new kakao.maps.LatLng(lat, lon);
-
-    // 지도의 중심을 현재 위치로 설정합니다.
-    map.setCenter(currentPosition);
 
     if (marker != null) {
       marker.setMap(null);
@@ -28,6 +23,11 @@ if (navigator.geolocation) {
          window.close(); // 페이지 자동 종료
        }
      });
+
+     // 5초 뒤에 지도의 중심을 현재 위치로 설정합니다.
+     setTimeout(function() { 
+        map.setCenter(currentPosition); 
+     }, 5000);
 
    }, function(error){
      console.log("Error occurred in watchPosition.");
