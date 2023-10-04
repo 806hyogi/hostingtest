@@ -24,10 +24,10 @@ if (navigator.geolocation) {
        }
      });
 
-     // 5초 뒤에 지도의 중심을 현재 위치로 설정합니다.
+     // 10초 뒤에 지도의 중심을 현재 위치로 설정합니다.
      setTimeout(function() { 
         map.setCenter(currentPosition); 
-     }, 5000);
+     }, 10000);
 
    }, function(error){
      console.log("Error occurred in watchPosition.");
