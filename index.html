@@ -168,23 +168,24 @@
             lon = position.coords.longitude;
           currentPosition = new kakao.maps.LatLng(lat, lon);
 
-          //위치만 업데이트합니다
-          marker.setPosition(currentPosition);
+          
 
-          // 지도 중심을 현재 위치로 이동시킵니다
-          // 10초 뒤에 지도의 중심을 현재 위치로 설정합니다.
-        setTimeout(function() { 
+          // 10초 뒤에 지도 중심을 현재 위치로 이동시킵니다
+          setTimeout(function() { 
+            //위치만 업데이트합니다
+            marker.setPosition(currentPosition);
             map.setCenter(currentPosition); 
-        }, 10000);
+        }, 10000); // 10000ms = 10s
 
         }, function (error) {
-          console.log("Error occurred. Error code: " + error.code);
+              console.log("Error occurred. Error code: " + error.code);
         },
-          { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 });
+              { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 });
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
+
 
     var lastTime = null;
     var lastPos = null;
