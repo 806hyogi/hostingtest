@@ -90,6 +90,8 @@
   <script src="polyline.js"></script>
   <script>
     var access_token = 'c7771ad9f9489b607742dbcae4fb45c50185e699'; // 실제 Access Token으로 대체해야 함
+    var timer; // 타이머 변수
+    var startTime; // 주행 시작 시간  
 
     fetch('https://www.strava.com/api/v3/athlete', {
       headers: {
@@ -116,6 +118,16 @@
     <button class='plus-btn' onclick='zoomIn()' aria-label='+ 버튼'></button>
     <!-- - 버튼 -->
     <button class='minus-btn' onclick='zoomOut()' aria-label='- 버튼'></button>
+    <!-- 주행 종료 버튼 -->
+    <button id="stopButton" onclick="stopDriving()">주행 종료</button>
+    <!-- 주행 시작 또는 재개 버튼 -->
+    <button id="startButton" onclick="startDriving()">주행 시작</button>
+    <!-- 초기화 버튼 -->
+    <button id="resetButton" onclick="resetDriving()">초기화</button>
+    <!-- 주행 거리를 표시할 요소 -->
+    <p id="distance">Distance: <span id="distanceValue"></span> km</p>
+    <!-- 주행 시간을 표시할 요소 -->
+    <div id="elapsedTime"></div>
   </div>
   <p id="speed">Speed: <span id="speedValue"></span> km/h</p>
 
@@ -178,37 +190,89 @@
     }
 
     var lastTime = null;
-  var lastPos = null;
+    var lastPos = null;
 
-  function startWatching() {
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(function(position) {
-        var currentTime = new Date().getTime();
-        var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    function startWatching() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function (position) {
+          var currentTime = new Date().getTime();
+          var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        if (lastPos) {
-          // 거리 계산
-          var distance = kakao.maps.services.Util.computeDistance(lastPos, currentPos);
-          
-          // 시간 차이 계산 (시간 단위: 시간)
-          var timeDiff = (currentTime - lastTime) / (1000 * 60 * 60);
+          // 주행 거리 업데이트
+             updateDistance(lastPosition, currentPos);
+             lastPosition = currentPos;
+          if (lastPos) {
+            // 거리 계산
+            var distance = kakao.maps.services.Util.computeDistance(lastPos, currentPos);
 
-          // 속도 계산 (km/h)
-          var speed = distance / timeDiff;
+            // 시간 차이 계산 (시간 단위: 시간)
+            var timeDiff = (currentTime - lastTime) / (1000 * 60 * 60);
 
-          document.getElementById('speedValue').innerText = speed.toFixed(2);
+            // 속도 계산 (km/h)
+            var speed = distance / timeDiff;
 
-        }
+            document.getElementById('speedValue').innerText = speed.toFixed(2);
 
-        lastTime = currentTime;
-        lastPos = currentPos;
-      });
-    } else {
-      alert("Geolocation is not supported by this browser.");
+          }
+
+          lastTime = currentTime;
+          lastPos = currentPos;
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
     }
+    function updateDistance(lastPosition, currentPosition) {
+  if (lastPosition && currentPosition) {
+    // 거리 계산 (km)
+    var distance = kakao.maps.services.Util.computeDistance(lastPosition, currentPosition) / 1000; // 미터를 킬로미터로 변환
+    totalDistance += distance; // 총 주행 거리 업데이트
+    document.getElementById('distanceValue').innerText = totalDistance.toFixed(2); // 소수점 두 자리까지 표시
   }
+}
 
-  startWatching();
+    var timer; // 타이머 변수
+    var startTime; // 주행 시작 시간
+    var elapsedTime = 0; // 경과 시간
+    var isDriving = false; // 주행 중 여부를 나타내는 변수
+    var totalDistance = 0; // 총 주행 거리 (초기값 0)
+
+    function startDriving() {
+      // 이미 주행 중이면 아무것도 하지 않음
+      if (isDriving) return;
+
+      // 주행 시작 버튼을 누를 때만 startTime을 현재 시간으로 설정
+      startTime = new Date().getTime() - elapsedTime;
+      timer = setInterval(updateTime, 1000); // 1초마다 updateTime 함수 호출
+      isDriving = true;
+    }
+
+    function updateTime() {
+      var currentTime = new Date().getTime();
+      elapsedTime = currentTime - startTime;
+
+      var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+      var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+      // 시간, 분, 초를 화면에 표시
+      var timeString = `${hours}시간 ${minutes}분 ${seconds}초`;
+      document.getElementById('elapsedTime').innerHTML = timeString;
+    }
+
+    function stopDriving() {
+      clearInterval(timer); // 타이머 중지
+      isDriving = false; // 주행 중 여부를 false로 설정
+    }
+
+    // 초기화 함수 추가
+    function resetDriving() {
+      clearInterval(timer);
+      elapsedTime = 0;
+      document.getElementById('elapsedTime').innerHTML = '';
+      isDriving = false; // 주행 중 여부를 false로 설정
+    }
+    startWatching();
   </script>
 
 </body>
