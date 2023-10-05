@@ -24,7 +24,7 @@ if (navigator.geolocation) {
       }
     });
 
-    map.setCenter(currentPosition);
+    
 
 
   }, function (error) {
