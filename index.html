@@ -82,6 +82,7 @@
 </head>
 
 <body style="margin: 0; padding: 0; height: 100%;">
+  zzzz
   <!-- 외부 JavaScript 파일 가져오기 -->
   <script src="marker.js"></script>
   <script src="geolocation.js"></script>
@@ -198,13 +199,11 @@
     function startWatching() {
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(function (position) {
+
           var options = {
-            enableHighAccuracy: true, // 높은 정확도 요청
             maximumAge: 0, // 이전 위치 데이터를 사용하지 않음
             timeout: 1000, // 타임아웃 시간 (1초)
           };
-
-         
 
           var currentTime = new Date().getTime();
           var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -219,19 +218,15 @@
 
           lastPosition = currentPos;
 
-           // 마커가 있다면 제거
-           if (marker) {
-            marker.setMap(null);
-          }
-          // 마커 표시
-          
+          // 마커가 이미 생성되어 있다면 위치만 업데이트
+          if (!marker) {
             marker = new kakao.maps.Marker({
               map: map,
-              position: currentPos
             });
-          
+          }
+          marker.setPosition(currentPos);
           map.setCenter(locPosition);
-        });
+        },options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -283,7 +278,7 @@
       if (isDriving) { // 주행 중일 때만 속도 계산 및 화면 업데이트
         // 속력 계산 및 화면에 표시
         var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
-        document.getElementById('speedValue').innerText = speed.toFixed(2) + " km/h"; // 속력을 화면에 표시
+        document.getElementById('speedValue').innerText = speed.toFixed(2); // 속력을 화면에 표시
       }
     }
     // 속력 계산 함수
