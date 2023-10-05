@@ -4,148 +4,146 @@
 <head>
   <meta charset="UTF-8">
   <title>KaKaoMap Study</title>
+  <!-- <link rel="stylesheet" type="text/css" href="index.css"> -->
   <style>
-    /* 공통 스타일 */
-    .button-container {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 999;
-    }
 
-    /* GPS 버튼 스타일 */
-    .gps-btn {
-      width: 150px;
-      /* adjust as needed */
-      height: 150px;
-      /* adjust as needed */
-      margin-bottom: 50px;
-      background-color: transparent;
-      border: none;
-      background-image: url('./src/gps.png');
-      background-size: cover;
-    }
+.button-container {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+  }
 
-    .gps-btn:active {
-      opacity: 0.6;
-    }
+  /* GPS 버튼 스타일 */
+  .gps-btn {
+    width: 150px;
+    /* adjust as needed */
+    height: 150px;
+    /* adjust as needed */
+    margin-bottom: 50px;
+    background-color: transparent;
+    border: none;
+    background-image: url('./src/gps.png');
+    background-size: cover;
+  }
 
-    /* + 버튼 스타일 */
-    .plus-btn {
-      width: 150px;
-      height: 150px;
-      background-color: transparent;
-      border: none;
-      background-image: url('./src/plus.png');
-      /* + 버튼 이미지 경로를 설정하세요 */
-      background-size: cover;
-      display: block;
-      margin-bottom: 10px;
-    }
+  .gps-btn:active {
+    opacity: 0.6;
+  }
 
-    .plus-btn:active {
-      opacity: 0.6;
-    }
+  /* + 버튼 스타일 */
+  .plus-btn {
+    width: 150px;
+    height: 150px;
+    background-color: transparent;
+    border: none;
+    background-image: url('./src/plus.png');
+    background-size: cover;
+    display: block;
+    margin-bottom: 10px;
+  }
 
-    /* - 버튼 스타일 */
-    .minus-btn {
-      width: 150px;
-      height: 150px;
-      background-color: transparent;
-      border: none;
-      background-image: url('./src/minus.png');
-      /* - 버튼 이미지 경로를 설정하세요 */
-      background-size: cover;
-      display: block;
-    }
+  .plus-btn:active {
+    opacity: 0.6;
+  }
 
-    .minus-btn:active {
-      opacity: 0.6;
-    }
+  /* - 버튼 스타일 */
+  .minus-btn {
+    width: 150px;
+    height: 150px;
+    background-color: transparent;
+    border: none;
+    background-image: url('./src/minus.png');
+    /* - 버튼 이미지 경로를 설정하세요 */
+    background-size: cover;
+    display: block;
+  }
 
-    #map {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+  .minus-btn:active {
+    opacity: 0.6;
+  }
 
-    #speed {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 999;
-      background-color: white;
-      padding: 10px;
-    }
+  #map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
-    /* 주행 종료 버튼 스타일 */
-    #stopButton {
-      background-color: #ff5733;
-      /* 배경색 설정 */
-      color: white;
-      /* 글자색 설정 */
-      font-size: 20px;
-      /* 글자 크기 설정 */
-      border: none;
-      padding: 10px 20px;
-      /* 내부 여백 설정 */
-      border-radius: 5px;
-      /* 모서리 둥글게 만듦 */
-      cursor: pointer;
-    }
+  #speed {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 999;
+    background-color: white;
+    padding: 10px;
+  }
 
-    /* 주행 시작 버튼 스타일 */
-    #startButton {
-      background-color: #33ff57;
-      /* 배경색 설정 */
-      color: white;
-      /* 글자색 설정 */
-      font-size: 20px;
-      /* 글자 크기 설정 */
-      border: none;
-      padding: 10px 20px;
-      /* 내부 여백 설정 */
-      border-radius: 5px;
-      /* 모서리 둥글게 만듦 */
-      cursor: pointer;
-    }
+  /* 주행 종료 버튼 스타일 */
+  #stopButton {
+    background-color: #ff5733;
+    /* 배경색 설정 */
+    color: white;
+    /* 글자색 설정 */
+    font-size: 20px;
+    /* 글자 크기 설정 */
+    border: none;
+    padding: 10px 20px;
+    /* 내부 여백 설정 */
+    border-radius: 5px;
+    /* 모서리 둥글게 만듦 */
+    cursor: pointer;
+  }
 
-    /* 초기화 버튼 스타일 */
-    #resetButton {
-      background-color: #3377ff;
-      /* 배경색 설정 */
-      color: white;
-      /* 글자색 설정 */
-      font-size: 20px;
-      /* 글자 크기 설정 */
-      border: none;
-      padding: 10px 20px;
-      /* 내부 여백 설정 */
-      border-radius: 5px;
-      /* 모서리 둥글게 만듦 */
-      cursor: pointer;
-    }
+  /* 주행 시작 버튼 스타일 */
+  #startButton {
+    background-color: #33ff57;
+    /* 배경색 설정 */
+    color: white;
+    /* 글자색 설정 */
+    font-size: 20px;
+    /* 글자 크기 설정 */
+    border: none;
+    padding: 10px 20px;
+    /* 내부 여백 설정 */
+    border-radius: 5px;
+    /* 모서리 둥글게 만듦 */
+    cursor: pointer;
+  }
 
-    /* 버튼에 호버 효과 추가 */
-    #stopButton:hover,
-    #startButton:hover,
-    #resetButton:hover {
-      opacity: 0.8;
-      /* 호버 시 투명도 조절 */
-    }
+  /* 초기화 버튼 스타일 */
+  #resetButton {
+    background-color: #3377ff;
+    /* 배경색 설정 */
+    color: white;
+    /* 글자색 설정 */
+    font-size: 20px;
+    /* 글자 크기 설정 */
+    border: none;
+    padding: 10px 20px;
+    /* 내부 여백 설정 */
+    border-radius: 5px;
+    /* 모서리 둥글게 만듦 */
+    cursor: pointer;
+  }
+
+  /* 버튼에 호버 효과 추가 */
+  #stopButton:hover,
+  #startButton:hover,
+  #resetButton:hover {
+    opacity: 0.8;
+    /* 호버 시 투명도 조절 */
+  }
   </style>
 </head>
 
 <body style="margin: 0; padding: 0; height: 100%;">
+  aaaa
   <!-- 외부 JavaScript 파일 가져오기 -->
-  <script src="marker.js"></script>
+  <!-- <script src="marker.js"></script>
   <script src="geolocation.js"></script>
   <script src="angle.js"></script>
-  <script src="polyline.js"></script>
-  <script>
-
-  </script>
+  <script src="polyline.js"></script> -->
 
   <div id="map" style="width: 100%; height: 100%;"></div>
   <div id="athleteInfo"></div>
@@ -259,16 +257,7 @@
             });
           }
 
-          if (isDriving) { // 주행 중일 때만 속도 계산 및 화면 업데이트
-            // 속력 계산 및 화면에 표시
-            var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
-            document.getElementById('speedValue').innerText = speed.toFixed(2); // 속력을 화면에 표시
 
-            // 1분당 소모 칼로리 계산
-            var minutesElapsed = elapsedTime / (1000 * 60); // 경과 시간을 분 단위로 변환
-            var burnedCalories = minutesElapsed * calorieBurnRate; // 1분당 소모 칼로리 계산
-            document.getElementById('caloriesBurned').innerText = burnedCalories.toFixed(2); // 소모 칼로리를 화면에 표시
-          }
           // 이전 위치와 현재 위치를 이용하여 이동 거리 계산
           if (lastPosition) {
             var distance = calculateDistance(lastPosition, newLatLng);
@@ -324,7 +313,7 @@
 
       // 주행 시작 버튼을 누를 때만 startTime을 현재 시간으로 설정
       startTime = new Date().getTime() - elapsedTime;
-      //timer = setInterval(updateTime, 1000); // 1초마다 updateTime 함수 호출
+      timer = setInterval(updateTime, 1000); // 1초마다 updateTime 함수 호출
       isDriving = true;
     }
 
@@ -339,6 +328,16 @@
       // 시간, 분, 초를 화면에 표시
       var timeString = `${hours}시간 ${minutes}분 ${seconds}초`;
       document.getElementById('elapsedTime').innerHTML = timeString;
+      if (isDriving) { // 주행 중일 때만 속도 계산 및 화면 업데이트
+        // 속력 계산 및 화면에 표시
+        var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
+        document.getElementById('speedValue').innerText = speed.toFixed(2); // 속력을 화면에 표시
+
+        // 1분당 소모 칼로리 계산
+        var minutesElapsed = elapsedTime / (1000 * 60); // 경과 시간을 분 단위로 변환
+        var burnedCalories = minutesElapsed * calorieBurnRate; // 1분당 소모 칼로리 계산
+        document.getElementById('caloriesBurned').innerText = burnedCalories.toFixed(2); // 소모 칼로리를 화면에 표시
+      }
 
 
     }
@@ -359,10 +358,11 @@
       clearInterval(timer);
       elapsedTime = 0;
       totalDistance = 0; // 이동거리 초기화
-      document.getElementById('elapsedTime').innerHTML = '';
+      document.getElementById('elapsedTime').innerHTML = '0초';
       document.getElementById('distanceValue').innerText = '0.00'; // 이동거리 화면 초기화
       document.getElementById('speedValue').innerText = '0.00'; // 속도 화면 초기화
       document.getElementById('caloriesBurned').innerText = '0.00'; // 소모 칼로리 화면 초기화
+
       isDriving = false; // 주행 중 여부를 false로 설정
     }
     startWatching();
