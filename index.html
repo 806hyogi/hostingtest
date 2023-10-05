@@ -70,7 +70,7 @@
       height: 100%;
     }
 
-    #speed {
+    #speed,#distance,#elapsedTime {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -82,7 +82,6 @@
 </head>
 
 <body style="margin: 0; padding: 0; height: 100%;">
-  zz
   <!-- 외부 JavaScript 파일 가져오기 -->
   <script src="marker.js"></script>
   <script src="geolocation.js"></script>
@@ -112,6 +111,7 @@
     <p id="distance">이동거리: <span id="distanceValue"></span> km</p>
     <!-- 주행 시간을 표시할 요소 -->
     <p id="distance">주행시간: <span id="elapsedTime"></span></p>
+    <!-- 주행 속도을 표시할 요소 -->
     <p id="speed">속도: <span id="speedValue"></span> km/h</p>
 
   </div>
@@ -154,46 +154,46 @@
     }
 
     // 현재 위치로 이동하는 함수입니다.
-    function moveToCurrentLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-          var lat = position.coords.latitude,
-            lon = position.coords.longitude;
-          var locPosition = new kakao.maps.LatLng(lat, lon);
+    // function moveToCurrentLocation() {
+    //   if (navigator.geolocation) {
+    //     navigator.geolocation.getCurrentPosition(function (position) {
+    //       var lat = position.coords.latitude,
+    //         lon = position.coords.longitude;
+    //       var locPosition = new kakao.maps.LatLng(lat, lon);
 
-          // 마커가 있다면 제거
-          if (marker) {
-            marker.setMap(null);
-          }
+    //       // 마커가 있다면 제거
+    //       if (marker) {
+    //         marker.setMap(null);
+    //       }
 
-          // 마커를 생성하고 지도에 표시합니다
-          marker = new kakao.maps.Marker({
-            map: map,
-            position: locPosition
-          });
+    //       // 마커를 생성하고 지도에 표시합니다
+    //       marker = new kakao.maps.Marker({
+    //         map: map,
+    //         position: locPosition
+    //       });
 
-          // 지도 중심을 현재 위치로 이동시킵니다
-          map.setCenter(locPosition);
-        }, function (error) {  // 에러 콜백함수 추가
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              alert("User denied the request for Geolocation.");
-              break;
-            case error.POSITION_UNAVAILABLE:
-              alert("Location information is unavailable.");
-              break;
-            case error.TIMEOUT:
-              alert("The request to get user location timed out.");
-              break;
-            case error.UNKNOWN_ERROR:
-              alert("An unknown error occurred.");
-              break;
-          }
-        });
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-    }
+    //       // 지도 중심을 현재 위치로 이동시킵니다
+    //       map.setCenter(locPosition);
+    //     }, function (error) {  // 에러 콜백함수 추가
+    //       switch (error.code) {
+    //         case error.PERMISSION_DENIED:
+    //           alert("User denied the request for Geolocation.");
+    //           break;
+    //         case error.POSITION_UNAVAILABLE:
+    //           alert("Location information is unavailable.");
+    //           break;
+    //         case error.TIMEOUT:
+    //           alert("The request to get user location timed out.");
+    //           break;
+    //         case error.UNKNOWN_ERROR:
+    //           alert("An unknown error occurred.");
+    //           break;
+    //       }
+    //     });
+    //   } else {
+    //     alert("Geolocation is not supported by this browser.");
+    //   }
+    // }
 
     function startWatching() {
       if (navigator.geolocation) {
@@ -203,6 +203,9 @@
             maximumAge: 0, // 이전 위치 데이터를 사용하지 않음
             timeout: 1000, // 타임아웃 시간 (1초)
           };
+
+         
+
           var currentTime = new Date().getTime();
           var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
           if (isDriving) { // 주행 중인 경우에만 이동 거리 계산
@@ -215,6 +218,21 @@
           }
 
           lastPosition = currentPos;
+
+           // 마커가 있다면 제거
+           if (marker) {
+            marker.setMap(null);
+          }
+          // 마커 표시
+          if (!marker) {
+            marker = new kakao.maps.Marker({
+              map: map,
+              position: currentPos
+            });
+          } else {
+            marker.setPosition(currentPos);
+          }
+          map.setCenter(locPosition);
         });
       } else {
         alert("Geolocation is not supported by this browser.");
@@ -264,9 +282,11 @@
       var timeString = `${hours}시간 ${minutes}분 ${seconds}초`;
       document.getElementById('elapsedTime').innerHTML = timeString;
 
-      // 속력 계산 및 화면에 표시
-      var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
-      document.getElementById('speedValue').innerText = speed.toFixed(2) + " km/h"; // 속력을 화면에 표시
+      if (isDriving) { // 주행 중일 때만 속도 계산 및 화면 업데이트
+        // 속력 계산 및 화면에 표시
+        var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
+        document.getElementById('speedValue').innerText = speed.toFixed(2) + " km/h"; // 속력을 화면에 표시
+      }
     }
     // 속력 계산 함수
     function calculateSpeed(distance, time) {
@@ -284,7 +304,10 @@
     function resetDriving() {
       clearInterval(timer);
       elapsedTime = 0;
+      totalDistance = 0; // 이동거리 초기화
       document.getElementById('elapsedTime').innerHTML = '';
+      document.getElementById('distanceValue').innerText = '0.00'; // 이동거리 화면 초기화
+      document.getElementById('speedValue').innerText = '0.00 km/h'; // 속도 화면 초기화
       isDriving = false; // 주행 중 여부를 false로 설정
     }
     startWatching();
