@@ -140,10 +140,10 @@
 <body style="margin: 0; padding: 0; height: 100%;">
   aaaa
   <!-- 외부 JavaScript 파일 가져오기 -->
-  <!-- <script src="marker.js"></script>
+  <script src="marker.js"></script>
   <script src="geolocation.js"></script>
   <script src="angle.js"></script>
-  <script src="polyline.js"></script> -->
+  <script src="polyline.js"></script>
 
   <div id="map" style="width: 100%; height: 100%;"></div>
   <div id="athleteInfo"></div>
@@ -173,8 +173,6 @@
 
   </div>
 
-
-
   <!-- 카카오 맵 API 연동 -->
   <script type="text/javascript"
     src="//dapi.kakao.com/v2/maps/sdk.js?appkey=baa1f48d1a2ac62f865637b2ddb9ac08&libraries=services"></script>
@@ -192,7 +190,7 @@
 
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(33.450701, 126.570667),
+      center: new kakao.maps.LatLng(36.450701, 126.570667),
       level: 3
     };
 
