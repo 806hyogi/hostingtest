@@ -70,7 +70,7 @@
       height: 100%;
     }
 
-    #speed{
+    #speed {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -110,7 +110,7 @@
     <!-- 주행 거리를 표시할 요소 -->
     <p id="distance">이동거리: <span id="distanceValue"></span> km</p>
     <!-- 주행 시간을 표시할 요소 -->
-    <p id="elapsedTime">주행시간: <span id="elapsedTimeValue"></span></p>
+    <p id="elapsedTime">주행시간: <span id="elapsedTime"></span></p>
     <!-- 주행 속도을 표시할 요소 -->
     <p id="speedd">속도: <span id="speedValue"></span> km/h</p>
 
@@ -135,7 +135,7 @@
 
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(36.450701, 126.570667),
+      center: new kakao.maps.LatLng(33.450701, 126.570667),
       level: 3
     };
 
@@ -153,49 +153,65 @@
       map.setLevel(level + 1);
     }
 
-    function startWatching() {
+    //현재 위치로 이동하는 함수입니다.
+    function moveToCurrentLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(function (position) {
-          var options = {
-            enableHighAccuracy: true, // 높은 정확도 요청
-            maximumAge: 0, // 이전 위치 데이터를 사용하지 않음
-            timeout: 1000, // 타임아웃 시간 (1초)
-          };
+          var lat = position.coords.latitude,
+            lon = position.coords.longitude;
+          currentPosition = new kakao.maps.LatLng(lat, lon);
 
-         
+          // 지도 중심을 현재 위치로 이동시킵니다
+          map.setCenter(currentPosition);
 
-          var currentTime = new Date().getTime();
-          var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          if (isDriving) { // 주행 중인 경우에만 이동 거리 계산
-            // 이전 위치가 존재하면 이동 거리 계산
-            if (lastPosition) {
-              var distance = calculateDistance(lastPosition, currentPos);
-              totalDistance += distance;
-              updateDistance(totalDistance);
-            }
-          }
-
-          lastPosition = currentPos;
-
-           // 마커가 있다면 제거
-           if (marker) {
-            marker.setMap(null);
-          }
-          // 마커 표시
-          if (!marker) {
-            marker = new kakao.maps.Marker({
-              map: map,
-              position: currentPos
-            });
-          } else {
-            marker.setPosition(currentPos);
-          }
-          map.setCenter(currentPos);
-        },[options]);
+        }, function (error) {
+          console.log("Error occurred. Error code: " + error.code);
+        },
+          { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 });
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     }
+
+
+    function startWatching() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function (position) {
+          var options = {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 1000,
+          };
+
+          var currentPos = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+          // 가상의 각도 값 - 실제 상황에서는 해당 위치와 목표 위치 사이의 각도를 계산해야 합니다.
+          var angle = 45;
+
+          if (isDriving) { // 주행 중인 경우에만 이동 거리 계산
+            if (lastPosition) { // 이전 위치가 존재하면 이동 거리 계산
+              var distance = calculateDistance(lastPosition, currentPos);
+              totalDistance += distance;
+              updateDistance(totalDistance);
+
+              // 마커가 있다면 제거
+              if (marker) {
+                marker.setMap(null);
+              }
+
+              // rotateMarker 함수를 사용하여 새로운 마커 생성
+              marker = rotateMarker(marker, angle);
+
+              map.setCenter(currentPos);
+              lastPosition = currentPos;
+            }
+          }
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
 
     // 두 지점 간의 거리 계산 함수 (Haversine 공식 사용)
     function calculateDistance(pos1, pos2) {
@@ -263,7 +279,7 @@
       clearInterval(timer);
       elapsedTime = 0;
       totalDistance = 0; // 이동거리 초기화
-      document.getElementById('elapsedTimeValue').innerHTML = '';
+      document.getElementById('elapsedTime').innerHTML = '';
       document.getElementById('distanceValue').innerText = '0.00'; // 이동거리 화면 초기화
       document.getElementById('speedValue').innerText = '0.00 km/h'; // 속도 화면 초기화
       isDriving = false; // 주행 중 여부를 false로 설정
