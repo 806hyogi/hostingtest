@@ -187,6 +187,7 @@
     var startTime; // 주행 시작 시간
     var elapsedTime = 0; // 경과 시간
     var isDriving = false; // 주행 중 여부를 나타내는 변수
+    var calorieBurnRate = 10; // 1분당 소모 칼로리 (단위: kcal)
 
     var container = document.getElementById('map');
     var options = {
@@ -336,13 +337,10 @@
         var burnedCalories = minutesElapsed * calorieBurnRate; // 1분당 소모 칼로리 계산
         document.getElementById('caloriesBurned').innerText = burnedCalories.toFixed(2); // 소모 칼로리를 화면에 표시
       }
-
-
     }
     // 속력 계산 함수
     function calculateSpeed(distance, time) {
-      // 거리는 km, 시간은 밀리초(ms)이므로, 속력을 km/h로 계산
-      var speed = (distance / 1000) / (time / (1000 * 60 * 60));
+      var speed = distance / (time / (1000 * 60 * 60));
       return speed;
     }
 
