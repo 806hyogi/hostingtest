@@ -8,7 +8,7 @@
 </head>
 
 <body style="margin: 0; padding: 0; height: 100%;">
-  css변경
+  go home
   <!-- 외부 JavaScript 파일 가져오기 -->
   <script src="geolocation.js"></script>
   <script src="polyline.js"></script>
@@ -29,13 +29,12 @@
     <button id="startButton" onclick="startDriving()">주행 시작</button>
     <!-- 초기화 버튼 -->
     <button id="resetButton" onclick="resetDriving()">초기화</button>
-    <!-- 주행 거리를 표시할 요소 -->
+
+
     <p id="distance">이동거리: <span id="distanceValue"></span> km</p>
-    <!-- 주행 시간을 표시할 요소 -->
-    <p id="elapsedTime">주행시간: <span id="elapsedTime"></span></p>
-    <!-- 주행 속도을 표시할 요소 -->
-    <p id="speedd">속도: <span id="speedValue"></span> km/h</p>
-    <!-- 주행 칼로리를 표시할 요소 -->
+    <p id="elapsedTime">주행시간: <span id="elapsedTimeValue"></span></p>
+    <p id="currentspeed">현재속도: <span id="currentspeedValue"></span> km/h</p>
+    <p id="speedd">평균속도: <span id="speedValue"></span> km/h</p>
     <p id="calories">소모 칼로리: <span id="caloriesBurned">0.00</span> kcal</p>
 
 
@@ -107,21 +106,23 @@
           var newLatLng = new kakao.maps.LatLng(lat, lon);
 
           // 폴리라인 추가 또는 업데이트
-          if (polyline) {
-            // 이미 폴리라인이 있으면 선을 그립니다.
-            var path = polyline.getPath();
-            path.push(newLatLng);
-            polyline.setPath(path);
-          } else {
-            // 폴리라인이 없으면 새로운 폴리라인을 생성합니다.
-            var path = [newLatLng];
-            polyline = new kakao.maps.Polyline({
-              path: path,
-              strokeWeight: 5, // 폴리라인 두께 설정
-              strokeColor: '#FF0000', // 폴리라인 색상 설정
-              strokeOpacity: 0.7, // 폴리라인 투명도 설정
-              map: map
-            });
+          if (isDriving) {
+            if (polyline) {
+              // 이미 폴리라인이 있으면 선을 그립니다.
+              var path = polyline.getPath();
+              path.push(newLatLng);
+              polyline.setPath(path);
+            } else {
+              // 폴리라인이 없으면 새로운 폴리라인을 생성합니다.
+              var path = [newLatLng];
+              polyline = new kakao.maps.Polyline({
+                path: path,
+                strokeWeight: 5, // 폴리라인 두께 설정
+                strokeColor: '#FF0000', // 폴리라인 색상 설정
+                strokeOpacity: 0.7, // 폴리라인 투명도 설정
+                map: map
+              });
+            }
           }
 
 
@@ -194,7 +195,7 @@
 
       // 시간, 분, 초를 화면에 표시
       var timeString = `${hours}시간 ${minutes}분 ${seconds}초`;
-      document.getElementById('elapsedTime').innerHTML = timeString;
+      document.getElementById('elapsedTimeValue').innerHTML = timeString;
       if (isDriving) { // 주행 중일 때만 속도 계산 및 화면 업데이트
         // 속력 계산 및 화면에 표시
         var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
@@ -215,6 +216,11 @@
     function stopDriving() {
       clearInterval(timer); // 타이머 중지
       isDriving = false; // 주행 중 여부를 false로 설정
+
+      if (polyline) {
+        polyline.setMap(null);
+        polyline = null; // 폴리라인 변수 초기화
+      }
     }
 
     // 초기화 함수 추가
@@ -222,7 +228,7 @@
       clearInterval(timer);
       elapsedTime = 0;
       totalDistance = 0; // 이동거리 초기화
-      document.getElementById('elapsedTime').innerHTML = '0초';
+      document.getElementById('elapsedTimeValue').innerHTML = '0초';
       document.getElementById('distanceValue').innerText = '0.00'; // 이동거리 화면 초기화
       document.getElementById('speedValue').innerText = '0.00'; // 속도 화면 초기화
       document.getElementById('caloriesBurned').innerText = '0.00'; // 소모 칼로리 화면 초기화
