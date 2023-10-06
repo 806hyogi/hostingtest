@@ -5,22 +5,14 @@
   <meta charset="UTF-8">
   <title>KaKaoMap Study</title>
   <link rel="stylesheet" type="text/css" href="index.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- 추가 스타일 -->
   <style>
-    /* 추가 스타일링 */
-    .info-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-    }
-
-    .info-container p {
-      margin: 0;
+    /* Add CSS for larger text */
+    #distance,
+    #elapsedTime,
+    #currentspeed,
+    #speedd,
+    #calories {
+      font-size: 18px; /* You can adjust the font size as needed */
     }
   </style>
 </head>
@@ -49,27 +41,11 @@
     <button id="resetButton" onclick="resetDriving()">초기화</button>
 
 
-    <div class="info-container">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-2">
-            <p>이동거리: <span id="distanceValue">0.00</span> km</p>
-          </div>
-          <div class="col-md-2">
-            <p>주행시간: <span id="elapsedTimeValue">0초</span></p>
-          </div>
-          <div class="col-md-2">
-            <p>현재속도: <span id="currentspeedValue">0.00</span> km/h</p>
-          </div>
-          <div class="col-md-2">
-            <p>평균속도: <span id="speedValue">0.00</span> km/h</p>
-          </div>
-          <div class="col-md-2">
-            <p>소모 칼로리: <span id="caloriesBurned">0.00</span> kcal</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <p id="distance">이동거리: <span id="distanceValue"></span> km</p>
+    <p id="elapsedTime">주행시간: <span id="elapsedTimeValue"></span></p>
+    <p id="currentspeed">현재속도: <span id="currentspeedValue"></span> km/h</p>
+    <p id="speedd">평균속도: <span id="speedValue"></span> km/h</p>
+    <p id="calories">소모 칼로리: <span id="caloriesBurned">0.00</span> kcal</p>
 
 
   </div>
