@@ -258,6 +258,8 @@
             }
           }
 
+          updateCurrentSpeed(newLatLng);
+
           // 이전 위치와 현재 위치를 이용하여 이동 거리 계산
           if (lastPosition) {
             var distance = calculateDistance(lastPosition, newLatLng);
@@ -329,7 +331,7 @@
 
         // 평균속력 계산 및 화면에 표시
         var speed = calculateSpeed(totalDistance, elapsedTime); // 속력 = 이동거리 / 주행시간
-        document.getElementById('avgspeedValue').innerText = speed.toFixed(2); // 속력을 화면에 표시
+        document.getElementById('speedValue').innerText = speed.toFixed(2); // 속력을 화면에 표시
 
         // 1분당 소모 칼로리 계산
         var minutesElapsed = elapsedTime / (1000 * 60); // 경과 시간을 분 단위로 변환
